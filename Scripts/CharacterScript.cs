@@ -7,13 +7,16 @@ public partial class CharacterScript : CharacterBody2D
 
 	// Get the gravity from the project settings to be synced with RigidBody nodes.
 	public float gravity = ProjectSettings.GetSetting("physics/2d/default_gravity").AsSingle();
-
 	public float meter = ProjectSettings.GetSetting("game/metrics/meter_length").AsSingle();
+    public float softJumpTime = ProjectSettings.GetSetting("game/mechanics/delayed_jump_time").AsSingle();
 
     private float timeSinceLastOnFloor = 0;
 
 	private void CalculateVelocity(float delta)
 	{
+
+        timeSinceLastOnFloor = IsOnFloor() ? 0 : Mathf.Clamp(timeSinceLastOnFloor + delta, 0, 1);
+
         float Speed /* meters per second */ = (float)GetMeta("Speed");
         float JumpHeight /* meters */ = (float)GetMeta("JumpHeight");
         float JumpSpeed /* meters per second */ = -Mathf.Sqrt(JumpHeight * gravity);
@@ -37,8 +40,11 @@ public partial class CharacterScript : CharacterBody2D
         velocity.Y += gravity * delta;
 
         // Handle Jump.
-        if (Input.IsActionJustPressed("ui_accept") && IsOnFloor())
+        if (Input.IsActionJustPressed("ui_accept") && timeSinceLastOnFloor <= softJumpTime)
+        {
             velocity.Y = JumpSpeed;
+            timeSinceLastOnFloor = 1;
+        }
 
         Velocity /* pixels per second */ = velocity * meter;
     }
@@ -50,8 +56,6 @@ public partial class CharacterScript : CharacterBody2D
         Vector2 mousePos = GetViewport().GetMousePosition() / camera.GetViewportRect().Size * 2.0f - new Vector2(1.0f, 1.0f);
 
         camera.Position = mousePos * meter * 3;
-
-        // bluh
     }
 
 
