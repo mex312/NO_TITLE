@@ -50,6 +50,8 @@ public partial class CharacterScript : CharacterBody2D
         Vector2 mousePos = GetViewport().GetMousePosition() / camera.GetViewportRect().Size * 2.0f - new Vector2(1.0f, 1.0f);
 
         camera.Position = mousePos * meter * 3;
+
+        // bluh
     }
 
 
