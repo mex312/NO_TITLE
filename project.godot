@@ -10,7 +10,7 @@ config_version=5
 
 [application]
 
-config/name="Test Project"
+config/name="NO_TITLE"
 run/main_scene="res://Scenes/main_scene.tscn"
 config/features=PackedStringArray("4.0", "C#", "GL Compatibility")
 config/icon="res://icon.svg"
@@ -24,7 +24,7 @@ window/stretch/mode="viewport"
 
 [dotnet]
 
-project/assembly_name="Test Project"
+project/assembly_name="NO_TITLE"
 
 [editor]
 
