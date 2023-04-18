@@ -12,6 +12,8 @@ public partial class CharacterScript : CharacterBody2D
 
     private float timeSinceLastOnFloor = 0;
 
+    private int layer = 0;
+
 	private void CalculateVelocity(float delta)
 	{
 
@@ -64,6 +66,13 @@ public partial class CharacterScript : CharacterBody2D
         CalculateVelocity((float)delta);
 
         CalculateCameraPos();
+
+        if (Input.IsActionJustPressed("game_layer_up")) layer--;
+        if (Input.IsActionJustPressed("game_layer_down")) layer++;
+
+        layer = Math.Clamp(layer, 0, 2);
+
+        CollisionMask = 1u << layer;
 
 		MoveAndSlide();
 	}
