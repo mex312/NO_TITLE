@@ -14,8 +14,8 @@ public partial class CharacterScript : CharacterBody2D
 
     private int layer = 1;
 
-    private float parallaxScale = 0.1f;
-    private float parallaxTranslation = 1.0f;
+    private float parallaxScale = 0.05f;
+    private float parallaxTranslation = 0.5f;
 
     // This player's camera
     private Camera2D attachedCamera;
@@ -124,7 +124,7 @@ public partial class CharacterScript : CharacterBody2D
                 layerNodes[i].Scale += layerNodes[i].Scale * parallaxScale;
             }
 
-            layerNodes[i].Position -= attachedCamera.Position * parallaxScale * times + Position * (layerNodes[i].Scale - Vector2.One);
+            layerNodes[i].Position -= attachedCamera.Position * parallaxTranslation * times + Position * (layerNodes[i].Scale - Vector2.One);
 
             times++;
         }
@@ -138,7 +138,7 @@ public partial class CharacterScript : CharacterBody2D
                 layerNodes[i].Scale -= layerNodes[i].Scale * parallaxScale;
             }
 
-            layerNodes[i].Position += attachedCamera.Position * parallaxScale * times - Position * (layerNodes[i].Scale - Vector2.One);
+            layerNodes[i].Position += attachedCamera.Position * parallaxTranslation * times - Position * (layerNodes[i].Scale - Vector2.One);
 
             times++;
         }
