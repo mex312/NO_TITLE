@@ -121,24 +121,24 @@ public partial class CharacterScript : CharacterBody2D
         {
             for(int j = 0; j < times; j++)
             {
-                layerNodes[i].Scale -= layerNodes[i].Scale * parallaxScale;
+                layerNodes[i].Scale += layerNodes[i].Scale * parallaxScale;
             }
 
-            layerNodes[i].Position -= attachedCamera.Position * parallaxScale * times - Position * layerNodes[i].Scale;
+            layerNodes[i].Position -= attachedCamera.Position * parallaxScale * times + Position * (layerNodes[i].Scale - Vector2.One);
 
             times++;
         }
 
         times = 1;
-
+         
         for (int i = layer - 1; i >= 0; i--)
         {
             for (int j = 0; j < times; j++)
             {
-                layerNodes[i].Scale += layerNodes[i].Scale * parallaxScale;
+                layerNodes[i].Scale -= layerNodes[i].Scale * parallaxScale;
             }
 
-            layerNodes[i].Position += attachedCamera.Position * parallaxScale * times - Position * layerNodes[i].Scale;
+            layerNodes[i].Position += attachedCamera.Position * parallaxScale * times - Position * (layerNodes[i].Scale - Vector2.One);
 
             times++;
         }
@@ -161,6 +161,6 @@ public partial class CharacterScript : CharacterBody2D
 		MoveAndSlide();
 
         // WIP
-        //CalculateParallax();
+        CalculateParallax();
 	}
 }
