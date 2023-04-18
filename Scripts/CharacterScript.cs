@@ -1,20 +1,65 @@
 using Godot;
 using System;
+using System.Linq;
 
 public partial class CharacterScript : CharacterBody2D
 {
-	public float TWO_ROOT = Mathf.Sqrt(2);
+	private float TWO_ROOT = Mathf.Sqrt(2);
 
-	// Get the gravity from the project settings to be synced with RigidBody nodes.
-	public float gravity = ProjectSettings.GetSetting("physics/2d/default_gravity").AsSingle();
-	public float meter = ProjectSettings.GetSetting("game/metrics/meter_length").AsSingle();
-    public float softJumpTime = ProjectSettings.GetSetting("game/mechanics/delayed_jump_time").AsSingle();
+	private float gravity = ProjectSettings.GetSetting("physics/2d/default_gravity").AsSingle();
+	private float meter = ProjectSettings.GetSetting("game/metrics/meter_length").AsSingle();
+    private float softJumpTime = ProjectSettings.GetSetting("game/mechanics/delayed_jump_time").AsSingle();
 
     private float timeSinceLastOnFloor = 0;
 
-    private int layer = 0;
+    private int layer = 1;
 
-	private void CalculateVelocity(float delta)
+    private float parallaxScale = 0.1f;
+    private float parallaxTranslation = 1.0f;
+
+    // This player's camera
+    private Camera2D attachedCamera;
+
+    private Node2D[] layerNodes;
+
+    public override void _Ready()
+    {
+        attachedCamera = GetNode<Camera2D>(GetMeta("AttachedCamera").AsNodePath());
+
+        Node2D layersOrigin = GetNode<Node2D>(GetMeta("LayersOrigin").AsNodePath());
+
+        layerNodes = Array.ConvertAll(layersOrigin.GetChildren().ToArray(), item => (Node2D)item);
+
+        SetParent(layerNodes[layer]);
+    }
+
+    private void SetParent(Node2D newParent)
+    {
+        GetParent().RemoveChild(this);
+        newParent.AddChild(this);
+    }
+
+    private void CalculateLayerPosition()
+    {
+        int deltaLayer = 0;
+
+        deltaLayer += Input.IsActionJustPressed("game_layer_up") ? -1 : 0;
+        deltaLayer += Input.IsActionJustPressed("game_layer_down") ? 1 : 0;
+
+        deltaLayer = layer + deltaLayer > 2 || layer + deltaLayer < 0 ? 0 : deltaLayer;
+
+        if (deltaLayer != 0) {
+            CollisionMask = 1u << (layer + deltaLayer);
+            SetParent(layerNodes[layer + deltaLayer]);
+
+            layer = TestMove(GlobalTransform, Vector2.Zero) ? layer : layer + deltaLayer;
+
+            CollisionMask = 1u << layer;
+            SetParent(layerNodes[layer]);
+        }
+    }
+
+    private void CalculateVelocity(float delta)
 	{
 
         timeSinceLastOnFloor = IsOnFloor() ? 0 : Mathf.Clamp(timeSinceLastOnFloor + delta, 0, 1);
@@ -26,7 +71,7 @@ public partial class CharacterScript : CharacterBody2D
         Vector2 velocity /* meters per second */ = Velocity / meter;
 
         // Player's WASD/ULDR input
-        Vector2 direction = Input.GetVector("ui_left", "ui_right", "ui_up", "ui_down");
+        Vector2 direction = Input.GetVector("game_left", "game_right", "game_up", "game_down");
 
         // Applying horizontal motion
         if (direction != Vector2.Zero)
@@ -42,7 +87,7 @@ public partial class CharacterScript : CharacterBody2D
         velocity.Y += gravity * delta;
 
         // Handle Jump.
-        if (Input.IsActionJustPressed("ui_accept") && timeSinceLastOnFloor <= softJumpTime)
+        if (Input.IsActionJustPressed("game_jump") && timeSinceLastOnFloor <= softJumpTime)
         {
             velocity.Y = JumpSpeed;
             timeSinceLastOnFloor = 1;
@@ -51,29 +96,71 @@ public partial class CharacterScript : CharacterBody2D
         Velocity /* pixels per second */ = velocity * meter;
     }
 
-    private void CalculateCameraPos()
+    private void CalculateCameraPosition()
     {
-        Camera2D camera = GetNode<Camera2D>(GetMeta("AttachedCamera").AsNodePath());
+        Vector2 mousePos = GetViewport().GetMousePosition() / attachedCamera.GetViewportRect().Size * 2.0f - new Vector2(1.0f, 1.0f);
 
-        Vector2 mousePos = GetViewport().GetMousePosition() / camera.GetViewportRect().Size * 2.0f - new Vector2(1.0f, 1.0f);
-
-        camera.Position = mousePos * meter * 3;
+        attachedCamera.Position = mousePos * meter * 3;
     }
 
 
+    //
+    // DOESN'T WORK PROPERLY (WIP)
+    //
+    private void CalculateParallax()
+    {
+        foreach(var node in layerNodes)
+        {
+            node.Scale = Vector2.One;
+            node.Position = Vector2.Zero;
+        }
+
+        int times = 1;
+        
+        for(int i = layer + 1; i < layerNodes.Length; i++)
+        {
+            for(int j = 0; j < times; j++)
+            {
+                layerNodes[i].Scale -= layerNodes[i].Scale * parallaxScale;
+            }
+
+            layerNodes[i].Position -= attachedCamera.Position * parallaxScale * times - Position * layerNodes[i].Scale;
+
+            times++;
+        }
+
+        times = 1;
+
+        for (int i = layer - 1; i >= 0; i--)
+        {
+            for (int j = 0; j < times; j++)
+            {
+                layerNodes[i].Scale += layerNodes[i].Scale * parallaxScale;
+            }
+
+            layerNodes[i].Position += attachedCamera.Position * parallaxScale * times - Position * layerNodes[i].Scale;
+
+            times++;
+        }
+
+
+    }
+    //
+    // DOESN'T WORK PROPERLY (WIP)
+    //
+
+
     public override void _PhysicsProcess(double delta)
-	{
+    {
+        CalculateLayerPosition();
+
         CalculateVelocity((float)delta);
 
-        CalculateCameraPos();
-
-        if (Input.IsActionJustPressed("game_layer_up")) layer--;
-        if (Input.IsActionJustPressed("game_layer_down")) layer++;
-
-        layer = Math.Clamp(layer, 0, 2);
-
-        CollisionMask = 1u << layer;
+        CalculateCameraPosition();
 
 		MoveAndSlide();
+
+        // WIP
+        //CalculateParallax();
 	}
 }
