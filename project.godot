@@ -33,8 +33,10 @@ version_control/autoload_on_startup=true
 
 [game]
 
-metrics/meter_length=16.0
+metrics/meter_length=64.0
 mechanics/delayed_jump_time=0.1
+mechanics/parallax_scale=0.025
+mechanics/modulation_scale=0.3
 
 [input]
 

@@ -10,16 +10,17 @@ public partial class CharacterScript : CharacterBody2D
 	private float meter = ProjectSettings.GetSetting("game/metrics/meter_length").AsSingle();
     private float softJumpTime = ProjectSettings.GetSetting("game/mechanics/delayed_jump_time").AsSingle();
 
+    private float parallaxScale = ProjectSettings.GetSetting("game/mechanics/parallax_scale").AsSingle();
+    private float modulationScale = ProjectSettings.GetSetting("game/mechanics/modulation_scale").AsSingle();
+
     private float timeSinceLastOnFloor = 0;
 
     private int layer = 1;
 
-    private float parallaxScale = 0.05f;
-    private float parallaxTranslation = 0.5f;
-
     // This player's camera
     private Camera2D attachedCamera;
 
+    // Terrain layers nodes
     private Node2D[] layerNodes;
 
     public override void _Ready()
@@ -30,7 +31,7 @@ public partial class CharacterScript : CharacterBody2D
 
         layerNodes = Array.ConvertAll(layersOrigin.GetChildren().ToArray(), item => (Node2D)item);
 
-        SetParent(layerNodes[layer]);
+        //SetParent(layerNodes[layer]);
     }
 
     private void SetParent(Node2D newParent)
@@ -103,10 +104,6 @@ public partial class CharacterScript : CharacterBody2D
         attachedCamera.Position = mousePos * meter * 3;
     }
 
-
-    //
-    // DOESN'T WORK PROPERLY (WIP)
-    //
     private void CalculateParallax()
     {
         foreach(var node in layerNodes)
@@ -114,40 +111,24 @@ public partial class CharacterScript : CharacterBody2D
             node.Scale = Vector2.One;
             node.Position = Vector2.Zero;
         }
-
-        int times = 1;
         
-        for(int i = layer + 1; i < layerNodes.Length; i++)
+        for(int i = 0; i < layerNodes.Length; i++)
         {
-            for(int j = 0; j < times; j++)
+            int z = i - layer;
+
+            GD.Print(modulationScale);
+            layerNodes[i].Modulate = Color.FromHsv(0.0f, 0.0f, 1.0f - modulationScale * Math.Abs(z), 1.0f - modulationScale * Math.Clamp(z, 0, int.MaxValue));
+
+            for(int j = 0; j < Math.Abs(z); j++)
             {
-                layerNodes[i].Scale += layerNodes[i].Scale * parallaxScale;
+                layerNodes[i].Scale += layerNodes[i].Scale * parallaxScale * Math.Sign(z);
             }
 
-            layerNodes[i].Position -= attachedCamera.Position * parallaxTranslation * times + Position * (layerNodes[i].Scale - Vector2.One);
-
-            times++;
-        }
-
-        times = 1;
-         
-        for (int i = layer - 1; i >= 0; i--)
-        {
-            for (int j = 0; j < times; j++)
-            {
-                layerNodes[i].Scale -= layerNodes[i].Scale * parallaxScale;
-            }
-
-            layerNodes[i].Position += attachedCamera.Position * parallaxTranslation * times - Position * (layerNodes[i].Scale - Vector2.One);
-
-            times++;
+            layerNodes[i].Position -= attachedCamera.Position * parallaxScale * z + Position * (layerNodes[i].Scale - Vector2.One);
         }
 
 
     }
-    //
-    // DOESN'T WORK PROPERLY (WIP)
-    //
 
 
     public override void _PhysicsProcess(double delta)
@@ -160,7 +141,6 @@ public partial class CharacterScript : CharacterBody2D
 
 		MoveAndSlide();
 
-        // WIP
         CalculateParallax();
 	}
 }
