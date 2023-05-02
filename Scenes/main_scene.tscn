@@ -1,8 +1,9 @@
-[gd_scene load_steps=6 format=3 uid="uid://spp4okf3eby4"]
+[gd_scene load_steps=7 format=3 uid="uid://spp4okf3eby4"]
 
 [ext_resource type="Script" path="res://Scripts/CharacterScript.cs" id="1_4bkdt"]
 [ext_resource type="Texture2D" uid="uid://bknby3ojc6l2l" path="res://Sprites/metrics_man.png" id="3_hv5jo"]
 [ext_resource type="TileSet" uid="uid://cc62fvgikwtv8" path="res://TileSets/test_tile_set.tres" id="3_nrmuh"]
+[ext_resource type="Script" path="res://Scripts/CharacterLegsManager.cs" id="4_b0fgs"]
 [ext_resource type="Texture2D" uid="uid://bg2qvbd3doxcq" path="res://icon.svg" id="4_bxoki"]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_uja1n"]
@@ -42,7 +43,7 @@ metadata/AttachedCamera = NodePath("Camera2D")
 metadata/LayersOrigin = NodePath("../../..")
 metadata/PlayerSpirit = NodePath("..")
 metadata/LegNodes = [NodePath("../LegNode")]
-metadata/LegsJoint = NodePath("Marker2D")
+metadata/LegsJoint = NodePath("LegMarker")
 
 [node name="Sprite" type="Sprite2D" parent="TerrainLayers/Layer2/PlayerSpirit/CharacterBody2D"]
 texture_filter = 1
@@ -54,8 +55,12 @@ shape = SubResource("CapsuleShape2D_uja1n")
 
 [node name="Camera2D" type="Camera2D" parent="TerrainLayers/Layer2/PlayerSpirit/CharacterBody2D"]
 
-[node name="Marker2D" type="Marker2D" parent="TerrainLayers/Layer2/PlayerSpirit/CharacterBody2D"]
-position = Vector2(-11, 15)
+[node name="LegMarker" type="Marker2D" parent="TerrainLayers/Layer2/PlayerSpirit/CharacterBody2D"]
+position = Vector2(0, 16)
+
+[node name="AnimationManager" type="Node2D" parent="TerrainLayers/Layer2/PlayerSpirit"]
+position = Vector2(0, 224)
+script = ExtResource("4_b0fgs")
 
 [node name="LegNode" type="Node2D" parent="TerrainLayers/Layer2/PlayerSpirit"]
 position = Vector2(5, 288)
