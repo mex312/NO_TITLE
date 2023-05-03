@@ -1,10 +1,12 @@
-[gd_scene load_steps=7 format=3 uid="uid://spp4okf3eby4"]
+[gd_scene load_steps=9 format=3 uid="uid://spp4okf3eby4"]
 
 [ext_resource type="Script" path="res://Scripts/CharacterScript.cs" id="1_4bkdt"]
 [ext_resource type="Texture2D" uid="uid://bknby3ojc6l2l" path="res://Sprites/metrics_man.png" id="3_hv5jo"]
 [ext_resource type="TileSet" uid="uid://cc62fvgikwtv8" path="res://TileSets/test_tile_set.tres" id="3_nrmuh"]
+[ext_resource type="Script" path="res://Scripts/AnimationItemPoint.cs" id="4_6jdin"]
 [ext_resource type="Script" path="res://Scripts/CharacterLegsManager.cs" id="4_b0fgs"]
 [ext_resource type="Texture2D" uid="uid://bg2qvbd3doxcq" path="res://icon.svg" id="4_bxoki"]
+[ext_resource type="Script" path="res://Scripts/AnimationItem.cs" id="6_7ap14"]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_uja1n"]
 radius = 16.0
@@ -56,7 +58,11 @@ shape = SubResource("CapsuleShape2D_uja1n")
 [node name="Camera2D" type="Camera2D" parent="TerrainLayers/Layer2/PlayerSpirit/CharacterBody2D"]
 
 [node name="LegMarker" type="Marker2D" parent="TerrainLayers/Layer2/PlayerSpirit/CharacterBody2D"]
-position = Vector2(0, 16)
+position = Vector2(20, 64)
+script = ExtResource("4_6jdin")
+toleranceBorder = Vector2(30, 30)
+toleranceOffset = Vector2(-20, 0)
+pinnedItemsPaths = Array[NodePath]([NodePath("../../LegNode")])
 
 [node name="AnimationManager" type="Node2D" parent="TerrainLayers/Layer2/PlayerSpirit"]
 position = Vector2(0, 224)
@@ -64,6 +70,7 @@ script = ExtResource("4_b0fgs")
 
 [node name="LegNode" type="Node2D" parent="TerrainLayers/Layer2/PlayerSpirit"]
 position = Vector2(5, 288)
+script = ExtResource("6_7ap14")
 
 [node name="Sprite2D" type="Sprite2D" parent="TerrainLayers/Layer2/PlayerSpirit/LegNode"]
 z_index = 2
