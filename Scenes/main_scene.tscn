@@ -40,12 +40,12 @@ floor_snap_length = 32.0
 safe_margin = 0.001
 script = ExtResource("1_4bkdt")
 metadata/JumpHeight = 1.0
-metadata/Speed = 5.0
+metadata/Speed = 1.0
 metadata/AttachedCamera = NodePath("Camera2D")
 metadata/LayersOrigin = NodePath("../../..")
 metadata/PlayerSpirit = NodePath("..")
-metadata/LegNodes = [NodePath("../LegNode")]
-metadata/LegsJoint = NodePath("LegMarker")
+metadata/LegNodes = [NodePath("../LeftLegNode")]
+metadata/LegsJoint = NodePath("LeftLegMarker")
 
 [node name="Sprite" type="Sprite2D" parent="TerrainLayers/Layer2/PlayerSpirit/CharacterBody2D"]
 texture_filter = 1
@@ -57,22 +57,38 @@ shape = SubResource("CapsuleShape2D_uja1n")
 
 [node name="Camera2D" type="Camera2D" parent="TerrainLayers/Layer2/PlayerSpirit/CharacterBody2D"]
 
-[node name="LegMarker" type="Marker2D" parent="TerrainLayers/Layer2/PlayerSpirit/CharacterBody2D"]
-position = Vector2(20, 64)
+[node name="LeftLegMarker" type="Marker2D" parent="TerrainLayers/Layer2/PlayerSpirit/CharacterBody2D"]
+position = Vector2(15, 64)
 script = ExtResource("4_6jdin")
-toleranceBorder = Vector2(30, 30)
+toleranceBorder = Vector2(30, 10)
 toleranceOffset = Vector2(-20, 0)
-pinnedItemsPaths = Array[NodePath]([NodePath("../../LegNode")])
+pinnedItemsPaths = Array[NodePath]([NodePath("../../LeftLegNode")])
+
+[node name="RightLegMarker" type="Marker2D" parent="TerrainLayers/Layer2/PlayerSpirit/CharacterBody2D"]
+position = Vector2(-11, 64)
+script = ExtResource("4_6jdin")
+toleranceBorder = Vector2(30, 10)
+toleranceOffset = Vector2(-20, 0)
+pinnedItemsPaths = Array[NodePath]([NodePath("../../RightLegNode")])
 
 [node name="AnimationManager" type="Node2D" parent="TerrainLayers/Layer2/PlayerSpirit"]
 position = Vector2(0, 224)
 script = ExtResource("4_b0fgs")
 
-[node name="LegNode" type="Node2D" parent="TerrainLayers/Layer2/PlayerSpirit"]
-position = Vector2(5, 288)
+[node name="RightLegNode" type="Node2D" parent="TerrainLayers/Layer2/PlayerSpirit"]
+position = Vector2(-24, 288)
 script = ExtResource("6_7ap14")
 
-[node name="Sprite2D" type="Sprite2D" parent="TerrainLayers/Layer2/PlayerSpirit/LegNode"]
+[node name="Sprite2D" type="Sprite2D" parent="TerrainLayers/Layer2/PlayerSpirit/RightLegNode"]
+z_index = 2
+scale = Vector2(0.0703123, 0.0703123)
+texture = ExtResource("4_bxoki")
+
+[node name="LeftLegNode" type="Node2D" parent="TerrainLayers/Layer2/PlayerSpirit"]
+position = Vector2(0, 288)
+script = ExtResource("6_7ap14")
+
+[node name="Sprite2D" type="Sprite2D" parent="TerrainLayers/Layer2/PlayerSpirit/LeftLegNode"]
 z_index = 2
 scale = Vector2(0.0703123, 0.0703123)
 texture = ExtResource("4_bxoki")
