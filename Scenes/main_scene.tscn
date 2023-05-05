@@ -1,16 +1,19 @@
-[gd_scene load_steps=9 format=3 uid="uid://spp4okf3eby4"]
+[gd_scene load_steps=10 format=3 uid="uid://bbbbnk78xwhfj"]
 
 [ext_resource type="Script" path="res://Scripts/CharacterScript.cs" id="1_4bkdt"]
 [ext_resource type="Texture2D" uid="uid://bknby3ojc6l2l" path="res://Sprites/metrics_man.png" id="3_hv5jo"]
 [ext_resource type="TileSet" uid="uid://cc62fvgikwtv8" path="res://TileSets/test_tile_set.tres" id="3_nrmuh"]
-[ext_resource type="Script" path="res://Scripts/AnimationItemPoint.cs" id="4_6jdin"]
+[ext_resource type="Script" path="res://Scripts/AnimationPoint.cs" id="4_5us21"]
 [ext_resource type="Script" path="res://Scripts/CharacterLegsManager.cs" id="4_b0fgs"]
 [ext_resource type="Texture2D" uid="uid://bg2qvbd3doxcq" path="res://icon.svg" id="4_bxoki"]
-[ext_resource type="Script" path="res://Scripts/AnimationItem.cs" id="6_7ap14"]
+[ext_resource type="Script" path="res://Scripts/LegAnimationItem.cs" id="6_0oxgk"]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_uja1n"]
 radius = 16.0
 height = 112.0
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_fwdde"]
+radius = 5.0
 
 [node name="Node2D" type="Node2D"]
 
@@ -34,6 +37,7 @@ layer_0/tile_data = PackedInt32Array(-786460, 2, 327680, -720924, 2, 327680, -65
 
 [node name="CharacterBody2D" type="CharacterBody2D" parent="TerrainLayers/Layer2/PlayerSpirit"]
 position = Vector2(0, 224)
+collision_layer = 8
 collision_mask = 2
 floor_constant_speed = true
 floor_snap_length = 32.0
@@ -44,8 +48,8 @@ metadata/Speed = 1.0
 metadata/AttachedCamera = NodePath("Camera2D")
 metadata/LayersOrigin = NodePath("../../..")
 metadata/PlayerSpirit = NodePath("..")
-metadata/LegNodes = [NodePath("../LeftLegNode")]
-metadata/LegsJoint = NodePath("LeftLegMarker")
+metadata/LegNodes = [NodePath("../RightLegNode")]
+metadata/LegsJoint = NodePath("GoingLeftPoint")
 
 [node name="Sprite" type="Sprite2D" parent="TerrainLayers/Layer2/PlayerSpirit/CharacterBody2D"]
 texture_filter = 1
@@ -57,41 +61,61 @@ shape = SubResource("CapsuleShape2D_uja1n")
 
 [node name="Camera2D" type="Camera2D" parent="TerrainLayers/Layer2/PlayerSpirit/CharacterBody2D"]
 
-[node name="LeftLegMarker" type="Marker2D" parent="TerrainLayers/Layer2/PlayerSpirit/CharacterBody2D"]
-position = Vector2(15, 64)
-script = ExtResource("4_6jdin")
-toleranceBorder = Vector2(30, 10)
-toleranceOffset = Vector2(-20, 0)
-pinnedItemsPaths = Array[NodePath]([NodePath("../../LeftLegNode")])
+[node name="GoingRightPoint" type="Marker2D" parent="TerrainLayers/Layer2/PlayerSpirit/CharacterBody2D"]
+position = Vector2(0, 59)
+script = ExtResource("4_5us21")
+tolerance = Vector2(30, 10)
+offset = Vector2(20, 0)
 
-[node name="RightLegMarker" type="Marker2D" parent="TerrainLayers/Layer2/PlayerSpirit/CharacterBody2D"]
-position = Vector2(-11, 64)
-script = ExtResource("4_6jdin")
-toleranceBorder = Vector2(30, 10)
-toleranceOffset = Vector2(-20, 0)
-pinnedItemsPaths = Array[NodePath]([NodePath("../../RightLegNode")])
+[node name="GoingLeftPoint" type="Marker2D" parent="TerrainLayers/Layer2/PlayerSpirit/CharacterBody2D"]
+position = Vector2(-24, 59)
+script = ExtResource("4_5us21")
+tolerance = Vector2(30, 10)
+offset = Vector2(-20, 0)
+
+[node name="RightLegStendingPoint" type="Marker2D" parent="TerrainLayers/Layer2/PlayerSpirit/CharacterBody2D"]
+position = Vector2(-24, 59)
+script = ExtResource("4_5us21")
+
+[node name="LeftLegStendingPoint" type="Marker2D" parent="TerrainLayers/Layer2/PlayerSpirit/CharacterBody2D"]
+position = Vector2(0, 59)
+script = ExtResource("4_5us21")
 
 [node name="AnimationManager" type="Node2D" parent="TerrainLayers/Layer2/PlayerSpirit"]
 position = Vector2(0, 224)
 script = ExtResource("4_b0fgs")
 
-[node name="RightLegNode" type="Node2D" parent="TerrainLayers/Layer2/PlayerSpirit"]
-position = Vector2(-24, 288)
-script = ExtResource("6_7ap14")
+[node name="LeftLegNode" type="RigidBody2D" parent="TerrainLayers/Layer2/PlayerSpirit" node_paths=PackedStringArray("Point")]
+position = Vector2(0, 283)
+collision_layer = 0
+collision_mask = 2
+gravity_scale = 128.0
+script = ExtResource("6_0oxgk")
+Point = NodePath("../CharacterBody2D/GoingLeftPoint")
+
+[node name="Sprite2D" type="Sprite2D" parent="TerrainLayers/Layer2/PlayerSpirit/LeftLegNode"]
+z_index = 2
+scale = Vector2(0.0703123, 0.0703123)
+texture = ExtResource("4_bxoki")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="TerrainLayers/Layer2/PlayerSpirit/LeftLegNode"]
+shape = SubResource("CircleShape2D_fwdde")
+
+[node name="RightLegNode" type="RigidBody2D" parent="TerrainLayers/Layer2/PlayerSpirit" node_paths=PackedStringArray("Point")]
+position = Vector2(-24, 283)
+collision_layer = 0
+collision_mask = 2
+gravity_scale = 128.0
+script = ExtResource("6_0oxgk")
+Point = NodePath("../CharacterBody2D/RightLegStendingPoint")
 
 [node name="Sprite2D" type="Sprite2D" parent="TerrainLayers/Layer2/PlayerSpirit/RightLegNode"]
 z_index = 2
 scale = Vector2(0.0703123, 0.0703123)
 texture = ExtResource("4_bxoki")
 
-[node name="LeftLegNode" type="Node2D" parent="TerrainLayers/Layer2/PlayerSpirit"]
-position = Vector2(0, 288)
-script = ExtResource("6_7ap14")
-
-[node name="Sprite2D" type="Sprite2D" parent="TerrainLayers/Layer2/PlayerSpirit/LeftLegNode"]
-z_index = 2
-scale = Vector2(0.0703123, 0.0703123)
-texture = ExtResource("4_bxoki")
+[node name="CollisionShape2D" type="CollisionShape2D" parent="TerrainLayers/Layer2/PlayerSpirit/RightLegNode"]
+shape = SubResource("CircleShape2D_fwdde")
 
 [node name="Layer3" type="TileMap" parent="TerrainLayers"]
 z_index = 1

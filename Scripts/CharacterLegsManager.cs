@@ -1,6 +1,9 @@
 using Godot;
-using System;
 
-public partial class CharacterLegsManager : GodotObject
+namespace Game
 {
+    public partial class CharacterLegsManager : GodotObject
+    {
+
+    }
 }
